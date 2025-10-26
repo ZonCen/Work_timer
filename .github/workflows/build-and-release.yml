@@ -1,0 +1,40 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.20'
+
+      - name: Build macOS binary
+        run: |
+          mkdir -p dist
+          go build -o dist/focus-tracker main.go
+          zip -j dist/focus-tracker-macos.zip dist/focus-tracker
+
+      - name: Upload workflow artifact (for branch pushes)
+        if: github.ref_type != 'tag'
+        uses: actions/upload-artifact@v4
+        with:
+          name: focus-tracker-artifact
+          path: dist/focus-tracker-macos.zip
+
+      - name: Create Release and upload asset (for tag pushes)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/focus-tracker-macos.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
