@@ -24,7 +24,8 @@ jobs:
           path: |
             ~/.cache/go-build
             ${{ github.workspace }}/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          # use go.mod as the cache key when go.sum is not present
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.mod') }}
           restore-keys: |
             ${{ runner.os }}-go-
 
