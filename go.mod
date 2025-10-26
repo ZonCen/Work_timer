@@ -1,3 +1,3 @@
 module github.com/ZonCen/Work_timer
 
-go 1.23.4
+go 1.23
